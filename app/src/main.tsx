@@ -1,0 +1,22 @@
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App'
+import '@fontsource/be-vietnam-pro/vietnamese-400.css'
+import '@fontsource/be-vietnam-pro/vietnamese-500.css'
+import '@fontsource/be-vietnam-pro/vietnamese-600.css'
+import '@fontsource/be-vietnam-pro/vietnamese-700.css'
+import '@fontsource/be-vietnam-pro/latin-400.css'
+import '@fontsource/be-vietnam-pro/latin-500.css'
+import '@fontsource/be-vietnam-pro/latin-600.css'
+import '@fontsource/be-vietnam-pro/latin-700.css'
+import '@fontsource/jetbrains-mono/latin-400.css'
+import '@fontsource/jetbrains-mono/latin-600.css'
+import './styles/deck.css'
+
+document.documentElement.classList.add('js')
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
