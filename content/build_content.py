@@ -100,7 +100,7 @@ slide(
 <div class="facts">
   <section><h2>Hình thức</h2><p>Bài nhóm, khoảng 4 giờ tại lớp.</p></section>
   <section><h2>Chấm điểm</h2><p>100 điểm C1 đến C8, bonus tối đa 10.</p></section>
-  <section><h2>Deadline</h2><p>23h59 ngày lab (GMT+7).</p></section>
+  <section><h2>Deadline</h2><p>{{DEADLINE}} (GMT+7).</p></section>
   <section><h2>Điều khiển</h2><p><kbd>←</kbd> <kbd>→</kbd> chuyển slide, <kbd>N</kbd> ghi chú.</p></section>
 </div>
 """,
@@ -198,7 +198,7 @@ slide(
     <tr><td class="num">17:30</td><td><b>CP2</b> v3 và Phần B</td><td>Run <code>v3</code>, report đủ Phần B</td><td>C3 20đ, C7 10đ</td></tr>
   </tbody>
 </table>
-<p class="note">Đây là mốc kiểm tra tại lớp, không phải deadline. Deadline: 23h59 ngày lab.</p>
+<p class="note">Đây là mốc kiểm tra tại lớp, không phải deadline. Deadline: {{DEADLINE}}.</p>
 """,
     """
 <strong>Chiến lược điều phối thời gian</strong>
@@ -805,7 +805,7 @@ slide(
   <div class="stack">
     <section class="panel">
       <h3>Deadline (GMT+7)</h3>
-      <p class="deadline">23h59 ngày lab</p>
+      <p class="deadline">{{DEADLINE}}</p>
       <p>Coach có thể gia hạn tối đa 48h.</p>
     </section>
     <div class="cta-row">
@@ -818,7 +818,7 @@ slide(
 <strong>Lời dặn kết thúc</strong>
 <ul>
   <li>Bấm nút để quay về CP1 và bắt đầu.</li>
-  <li>Deadline theo SUBMISSION.md của lab: 23h59 ngày lab (GMT+7), áp dụng cho cả lớp sáng và lớp chiều. Coach có thể gia hạn tối đa 48h; nếu gia hạn thì theo thông báo của coach.</li>
+  <li>Deadline (GMT+7) theo ca: lớp sáng 23h59 ngày lab, lớp chiều 11h59 sáng hôm sau. Slide tự hiện đúng mốc của ca đang mở. Lưu ý SUBMISSION.md của lab hiện ghi chung 23h59 ngày lab. Coach có thể gia hạn tối đa 48h; nếu gia hạn thì theo thông báo của coach.</li>
   <li>Các mốc 15:00, 15:30, 16:00, 16:30, 17:30 chỉ là checkpoint tại lớp, không phải deadline.</li>
   <li>Không commit <code>.env</code>, API key, token Telegram, <code>.venv</code>, cache hay <code>arxiv_papers/</code>.</li>
 </ul>

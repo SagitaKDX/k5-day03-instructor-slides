@@ -5,7 +5,7 @@
 // MORNING_SHIFT_HOURS. Change that one number if the morning class starts at another time.
 //
 // Slide content is written in afternoon times. localize() shifts every HH:MM between 13:00 and
-// 18:59 for the morning class, and fills the {{SESSION}} / {{SESSION_RANGE}} tokens.
+// 18:59 for the morning class, and fills the {{SESSION}} / {{SESSION_RANGE}} / {{DEADLINE}} tokens.
 
 export type Session = 'morning' | 'afternoon'
 
@@ -21,6 +21,12 @@ const AFTERNOON_END = '17:30'
 export const SESSION_LABEL: Record<Session, string> = {
   morning: 'Lớp sáng',
   afternoon: 'Lớp chiều',
+}
+
+/** Submission deadline (GMT+7) per class: morning same night, afternoon next morning. */
+export const DEADLINE: Record<Session, string> = {
+  morning: '23h59 ngày lab',
+  afternoon: '11h59 sáng hôm sau',
 }
 
 const PARAM = 'ca'
@@ -66,6 +72,7 @@ export function localize(text: string, session: Session): string {
   let out = text
     .replaceAll('{{SESSION}}', SESSION_LABEL[session])
     .replaceAll('{{SESSION_RANGE}}', range)
+    .replaceAll('{{DEADLINE}}', DEADLINE[session])
   if (shift !== 0) {
     out = out.replace(TIME_RE, (_, h: string, m: string) => shiftTime(`${h}:${m}`, shift))
   }
