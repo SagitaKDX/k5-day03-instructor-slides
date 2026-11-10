@@ -42,14 +42,13 @@ type SlideData = {
 }
 
 const rawSlideData = rawSlides as SlideData[]
-const CP_LIST = ['0', '1', '2', '3', '4', '5'] as const
+const CP_LIST = ['1', '2', '3', '4', '5'] as const
 const CP_NAMES: Record<string, string> = {
-  '0': 'Setup',
-  '1': 'Baseline',
-  '2': 'v1 và tool',
-  '3': 'Eval nhóm',
-  '4': 'Showdown',
-  '5': 'v3 và report',
+  '1': 'Setup và v0',
+  '2': 'v1 đến v3',
+  '3': 'Tool và test',
+  '4': 'Eval 10 case',
+  '5': 'UI và report',
 }
 
 function formatTime(totalSec: number) {
@@ -191,7 +190,7 @@ export default function App() {
 
   const kickoffLab = useCallback(() => {
     playSfx('kickoff')
-    goToCp('0')
+    goToCp('1')
   }, [goToCp])
 
   useEffect(() => {

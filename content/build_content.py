@@ -1,13 +1,13 @@
 """Builds app/src/slides/content.json for the Day 03 instructor deck.
 
 Structure mirrors the Day 02 deck (SagitaKDX/k5-day02-instructor-slides): opening, format, goals,
-schedule, naming, AI boundaries, one slide per checkpoint (meta bar, task, coach, anti-pattern,
-self-check), a phase transition, rubric, and the submission checklist.
+schedule, naming, rules, one slide per checkpoint (meta bar, task, coach, anti-pattern, self-check),
+a phase transition, bonus, rubric, and the submission checklist.
 
-Facts come from the Day03 lab repo (VinUni-AI20k/Day03-Prompt-Engineering-Tool-Calling-Labs-student):
-README.md, TOOL-SETUP.md, starter_v0/tools/README.md, starter_v0/artifacts/REPORT.md,
-starter_v0/data/eval_base.json, starter_v0/tests/*. Course-wide conventions (repo naming, LMS,
-deadlines) come from the Day 02 SUBMISSION.md and RULES.md and are marked as such in the notes.
+Facts come from the Day03 lab repo (VinUni-AI20k/Day03-Prompt-Engineering-Tool-Calling-Labs-student,
+synced to commit c68da4c): README.md, CHECKPOINTS.md, RULES.md, RUBRIC.md, SUBMISSION.md, TEAM.md,
+report/team/*, docs/TOOL-SETUP.md, starter_v0/*. Times are the afternoon class; the app shifts them
+for the morning class (app/src/session.ts).
 
 Run from the repo root:  python3 -I content/build_content.py
 """
@@ -76,7 +76,7 @@ def check(text):
 
 # 0 ── Title ─────────────────────────────────────────────────────────────
 slide(
-    "Day 03: Prompt Engineering và Tool Calling",
+    "Day 03: Research Agent Tool Eval",
     """
 <div class="title-slide">
   <div class="title-copy">
@@ -86,48 +86,47 @@ slide(
   </div>
   <figure class="title-proof">
     <figcaption>Mỗi lần chạy eval đều lưu lại một file run JSON:</figcaption>
-<pre class="code code--big"><span class="c">// runs/*.json</span>
+<pre class="code code--big"><span class="c">// starter_v0/runs/*.json</span>
 "summary": {
   "case_accuracy": …,
   "tool_routing_accuracy": …,
   "argument_accuracy": …,
-  "multiturn_accuracy": …
+  "multiturn_accuracy": …,
+  "provider_error_cases": 0
 },
-"artifact_version", "prompt_hash", "tools_hash"
-"results[*].result.failures"
 "results[*].result.observed_mismatch"</pre>
   </figure>
 </div>
 <div class="facts">
-  <section><h2>Hình thức</h2><p>Nhóm, repo <code>starter_v0/</code>.</p></section>
-  <section><h2>Đầu ra</h2><p>Agent có UI, <code>v0</code> đến <code>v3</code>, report.</p></section>
-  <section><h2>Tiêu chí chấm</h2><p>Vòng lặp có bằng chứng.</p></section>
-  <section><h2>Điều khiển</h2><p><kbd>←</kbd> <kbd>→</kbd> chuyển slide, <kbd>P</kbd> timer, <kbd>N</kbd> ghi chú.</p></section>
+  <section><h2>Hình thức</h2><p>Bài nhóm, khoảng 4 giờ tại lớp.</p></section>
+  <section><h2>Chấm điểm</h2><p>100 điểm C1 đến C8, bonus tối đa 10.</p></section>
+  <section><h2>Deadline</h2><p>23h59 ngày lab (GMT+7).</p></section>
+  <section><h2>Điều khiển</h2><p><kbd>←</kbd> <kbd>→</kbd> chuyển slide, <kbd>N</kbd> ghi chú.</p></section>
 </div>
 """,
     """
 <strong>Chào lớp và neo tư duy</strong>
 <ul>
-  <li>Nhấn mạnh ngay từ đầu: buổi học không chấm agent trả lời hay hay dở, mà chấm vòng lặp cải tiến có bằng chứng: chạy thật, đọc log, sửa từng điểm, chạy lại và ghi nhận kết quả.</li>
-  <li>Khung code bên phải mô tả cấu trúc file run JSON. Mọi kết luận trong report đều phải đối chiếu với các trường này.</li>
-  <li>Prompt starter được cố tình viết chưa tối ưu. Baseline thấp là bình thường; điều quan trọng là nhóm giải thích được nguyên nhân.</li>
-  <li>Nhắc lớp mở sẵn repo starter và file <code>TOOL-SETUP.md</code>.</li>
+  <li>Nhấn mạnh: buổi học không chấm “chatbot trả lời hay”. Buổi học chấm vòng lặp có bằng chứng: chạy thật, đọc run JSON, đặt một giả thuyết, sửa, đo lại.</li>
+  <li>Khung code bên phải là cấu trúc file run JSON. Theo RUBRIC, chỉ run có <code>provider_error_cases == 0</code> và <code>measured_cases == total_cases</code> mới được dùng làm bằng chứng.</li>
+  <li>Prompt starter được cố tình viết chưa tốt. Baseline thấp là bình thường; điều quan trọng là nhóm giải thích được nguyên nhân.</li>
+  <li>Thứ tự đọc theo README lab: RULES, CHECKPOINTS, <code>starter_v0/README.md</code>, RUBRIC, SUBMISSION. Key cho từng tool: <code>docs/TOOL-SETUP.md</code>.</li>
 </ul>
 """,
 )
 
 # 1 ── Format ────────────────────────────────────────────────────────────
 slide(
-    "Hình thức: làm nhóm, theo vòng lặp có bằng chứng",
+    "Hình thức: bài nhóm, vòng lặp có bằng chứng",
     """
 <h2 class="title">Một vòng lặp sáu bước, chạy ít nhất bốn lần</h2>
 <p class="lede">Mỗi phiên bản <code>v0</code> đến <code>v3</code> đi trọn sáu bước, một giả thuyết mỗi vòng.</p>
 <ol class="loop">
   <li><b>Chạy baseline</b><span>Provider thật, output trong <code>runs/</code>.</span></li>
-  <li><b>Đọc run JSON</b><span>Sai tool, sai args, không hỏi lại, hay gọi tool thừa?</span></li>
+  <li><b>Đọc run JSON</b><span>Sai tool, sai args, không hỏi lại, gọi thừa?</span></li>
   <li><b>Sửa một điểm</b><span>Trong <code>system_prompt.md</code> hoặc <code>tools.yaml</code>.</span></li>
   <li><b>Chạy lại, ghi log</b><span>Metric trước và sau trong <code>version_log.csv</code>.</span></li>
-  <li><b>Tự viết eval</b><span>Case trong <code>eval_group.json</code>.</span></li>
+  <li><b>Tự viết eval</b><span>10 case trong <code>eval_group.json</code>.</span></li>
   <li><b>Viết report</b><span>Từ log thật.</span></li>
 </ol>
 <div class="grid grid-3 roles">
@@ -139,9 +138,9 @@ slide(
     """
 <strong>Lưu ý về cơ chế nhóm</strong>
 <ul>
-  <li>Ba vai ở hàng dưới là gợi ý phân công, không phải quy định bắt buộc. README lab không giới hạn số người hay vai trò.</li>
-  <li>Cảnh báo tình trạng chia nhỏ việc rồi ghép cơ học: ở bước 2 và 3 (đọc log, chọn giả thuyết), cả nhóm phải cùng ngồi thảo luận.</li>
-  <li>Bước 2 dễ bị bỏ qua nhất: sinh viên thường nhìn điểm tổng rồi sửa prompt theo cảm tính. Yêu cầu mở <code>observed_mismatch</code> của từng case FAIL.</li>
+  <li>Repo lab không quy định số người mỗi nhóm; coach chốt tại lớp. Ba vai ở hàng dưới chỉ là gợi ý phân công.</li>
+  <li>Nhóm điền <code>TEAM.md</code> (thành viên, vai trò, commit chốt). Mỗi thành viên viết báo cáo cá nhân <code>report/team/MSSV_HoTen.md</code> và phải có commit kỹ thuật: tiêu chí C8 (10 điểm) chấm phần này.</li>
+  <li>Bước 2 dễ bị bỏ qua nhất: nhìn điểm tổng rồi sửa theo cảm tính. Yêu cầu nhóm mở <code>observed_mismatch</code> của từng case FAIL.</li>
 </ul>
 """,
 )
@@ -153,98 +152,96 @@ slide(
 <h2 class="title">Bốn mục tiêu học tập của Lab Day 03</h2>
 <div class="grid grid-2">
   <section class="panel">
-    <h3>Đọc lỗi của agent từ log, không từ cảm giác</h3>
-    <p>Đọc <code>observed_mismatch</code>, gán mỗi case FAIL vào một trong sáu loại lỗi.</p>
-    <p class="cp-ref">Dùng ở CP1, CP2</p>
+    <h3>Viết prompt và tool declaration đúng</h3>
+    <p>Đúng tool, đúng args, biết hỏi lại, xin xác nhận trước khi hành động.</p>
+    <p class="cp-ref">CP2, tiêu chí C2</p>
   </section>
   <section class="panel">
-    <h3>Viết prompt và tool declaration có ranh giới rõ</h3>
-    <p>Tool nói rõ khi nào dùng, khi nào không. Thiếu thông tin thì <code>clarify</code>.</p>
-    <p class="cp-ref">Dùng ở CP2, CP3, CP5</p>
+    <h3>Tối ưu theo vòng lặp bằng chứng</h3>
+    <p>Chạy eval, đọc run JSON, một giả thuyết, sửa, đo lại.</p>
+    <p class="cp-ref">CP1, CP2, tiêu chí C1, C3</p>
   </section>
   <section class="panel">
-    <h3>Tách hai loại kiểm thử: eval và unit test</h3>
+    <h3>Tách lỗi model và lỗi code tool</h3>
     <p>Eval đo model chọn tool. Unit test đo code của tool.</p>
-    <p class="cp-ref">Dùng ở CP2, CP3</p>
+    <p class="cp-ref">CP3, CP4, tiêu chí C4, C5</p>
   </section>
   <section class="panel">
-    <h3>Ra quyết định bằng số đo có thể kiểm lại</h3>
-    <p>Mỗi phiên bản có giả thuyết, metric trước và sau, file run.</p>
-    <p class="cp-ref">Dùng ở CP1 đến CP5</p>
+    <h3>Cho người khác dùng thử, báo cáo từ log</h3>
+    <p>UI có link dùng thử, report dựa trên log thật.</p>
+    <p class="cp-ref">CP5, tiêu chí C6, C7</p>
   </section>
 </div>
 """,
     """
-<strong>Trọng tâm đánh giá của bốn mục tiêu</strong>
+<strong>Bốn mục tiêu lấy nguyên ý từ mục “Mục tiêu học tập” trong README lab</strong>
 <ul>
-  <li>Mục tiêu 1: nhóm nào chỉ báo accuracy tăng mà không chỉ ra case nào đổi từ FAIL sang PASS thì chưa đạt.</li>
-  <li>Mục tiêu 2: việc <code>send</code> gửi khi chưa xác nhận là lỗi ranh giới nghiêm trọng nhất của buổi (case <code>R12_confirm_before_send</code>).</li>
+  <li>Mục tiêu 1: <code>send</code> gửi khi chưa xác nhận là lỗi ranh giới nghiêm trọng nhất (case <code>R12_confirm_before_send</code>). Boundary xác nhận trong prompt và <code>tools.yaml</code> là phần bắt buộc.</li>
+  <li>Mục tiêu 2: chỉ báo accuracy tăng mà không chỉ ra case nào đổi từ FAIL sang PASS thì chưa đạt. Version không tăng điểm vẫn được tính nếu phân tích trung thực (RUBRIC C3).</li>
   <li>Mục tiêu 3: ví dụ trong README: model gọi đúng <code>lookup(topic="news")</code> nhưng tool quên gửi <code>topic</code> lên API. Eval vẫn PASS, user vẫn nhận kết quả sai.</li>
-  <li>Mục tiêu 4: không chấp nhận nhận định prompt mới tốt hơn nếu không có hai con số trước sau và đường dẫn tới file run.</li>
 </ul>
 """,
 )
 
 # 3 ── Schedule ──────────────────────────────────────────────────────────
 slide(
-    "Lịch trình 240 phút (CP0 đến CP5)",
+    "Năm checkpoint và mốc kiểm tra tại lớp",
     """
-<h2 class="title">Lịch trình 240 phút gồm sáu checkpoint</h2>
+<h2 class="title">Năm checkpoint và mốc kiểm tra tại lớp</h2>
 <table class="data">
-  <thead><tr><th>Khung giờ</th><th>Checkpoint</th><th>Giai đoạn</th><th>Nhiệm vụ trọng tâm và sản phẩm</th></tr></thead>
+  <thead><tr><th>Mốc</th><th>Checkpoint</th><th>Phải có trong repo</th><th>Rubric</th></tr></thead>
   <tbody>
-    <tr><td class="num">Trước 15:00</td><td><b>CP0</b> Setup</td><td>Chuẩn bị</td><td><code>.env</code> đủ key, preflight pass, <code>pytest</code> chạy được</td></tr>
-    <tr><td class="num">15:00 đến 15:30</td><td><b>CP1</b> Baseline và UI</td><td>Đo</td><td>Chạy <code>v0</code>, gán loại lỗi, dựng UI</td></tr>
-    <tr><td class="num">15:30 đến 16:00</td><td><b>CP2</b> v1 và tool mới</td><td>Sửa</td><td>Chạy <code>v1</code>, 1 tool mới có 3 test</td></tr>
-    <tr><td class="num">16:00 đến 16:30</td><td><b>CP3</b> Eval nhóm và v2</td><td>Đo lại</td><td>Eval nhóm, chạy <code>v2</code>, Phần A</td></tr>
-    <tr class="row-key"><td class="num">16:30 đến 17:30</td><td><b>CP4</b> Team showdown</td><td>Demo</td><td>Nhóm khác thử agent qua link public</td></tr>
-    <tr><td class="num">Từ 17:30</td><td><b>CP5</b> v3 và report</td><td>Đóng gói</td><td>Chạy <code>v3</code>, report Phần B</td></tr>
+    <tr><td class="num">15:00</td><td><b>CP1</b> Setup và baseline v0</td><td>Run <code>v0</code> hợp lệ, gán loại lỗi</td><td>C1 10đ</td></tr>
+    <tr><td class="num">15:30</td><td><b>CP2</b> v1 &nbsp;và&nbsp; <b>CP3</b> tool mới</td><td>Run <code>v1</code>; tool mới có 3 test</td><td>C2 15đ, C4 15đ</td></tr>
+    <tr><td class="num">16:00</td><td><b>CP4</b> Eval 10 case &nbsp;và&nbsp; v2</td><td>5 single turn, 5 multi turn; run <code>v2</code></td><td>C5 10đ</td></tr>
+    <tr class="row-key"><td class="num">16:30</td><td><b>CP5</b> Showdown</td><td>UI có link, Phần A của report</td><td>C6 10đ</td></tr>
+    <tr><td class="num">17:30</td><td><b>CP2</b> v3 và Phần B</td><td>Run <code>v3</code>, report đủ Phần B</td><td>C3 20đ, C7 10đ</td></tr>
   </tbody>
 </table>
-<p class="note">Mốc cứng: <code>REPORT.md</code> Phần A xong trước 16:30.</p>
+<p class="note">Đây là mốc kiểm tra tại lớp, không phải deadline. Deadline: 23h59 ngày lab.</p>
 """,
     """
 <strong>Chiến lược điều phối thời gian</strong>
 <ul>
-  <li>Khung giờ lớp chiều lấy từ mục Checkpoint 4h trong README lab, tính theo giờ bắt đầu mỗi chặng. Lớp sáng dùng cùng lịch, dời sớm 5 tiếng; deck tự đổi theo giờ máy khi mở (trước 13:00 là lớp sáng) và có nút đổi tay trên header.</li>
-  <li>Timer trên header tự chạy khi mở slide CP1 đến CP4. Nhắc lớp khi còn 2 phút.</li>
-  <li>CP1 thường nghẽn vì thiếu key hoặc quota. Nhóm nào chưa chạy được baseline lúc 15:15 thì cho dùng tạm provider khác.</li>
-  <li>CP4 dài nhất (60 phút) vì vừa demo vừa thử chéo. Không cắt bớt CP4 để bù giờ cho các CP trước.</li>
+  <li>Mốc giờ lấy từ CHECKPOINTS.md của lab (lớp chiều). Lớp sáng dùng cùng lịch, dời sớm 5 tiếng; deck tự đổi theo giờ máy khi mở (trước 13:00 là lớp sáng) và có nút đổi tay trên header.</li>
+  <li>CP2 kéo dài nhất: v1 lúc 15:30, v2 lúc 16:00, v3 lúc 17:30. CP3 (tool mới) chạy song song với v1.</li>
+  <li>Mốc cứng duy nhất trong buổi: Phần A của <code>report/team/group_report.md</code> xong trước showdown 16:30.</li>
+  <li>C8 (đóng góp cá nhân, 10 điểm) chấm trên <code>TEAM.md</code>, báo cáo cá nhân và lịch sử commit, không gắn với một mốc giờ.</li>
 </ul>
 """,
 )
 
-# 4 ── Naming ────────────────────────────────────────────────────────────
+# 4 ── Repo naming ───────────────────────────────────────────────────────
 slide(
-    "Fork và đặt tên repo",
+    "Tạo repo nhóm và đặt tên",
     """
-<h2 class="title">Quy ước fork và đặt tên repo của nhóm</h2>
+<h2 class="title">Tạo repo nhóm và đặt tên đúng ngay từ đầu</h2>
 <div class="grid grid-2">
   <section class="panel">
-    <h3>Tên repo nhóm, do nhóm trưởng fork</h3>
-<pre class="code code--wrap">K5-&lt;L3A hoặc L3B&gt;-DAY03-HoVaTen-MSSV-PromptEngineeringToolCalling</pre>
-    <p>Ví dụ nhóm trưởng Nguyễn Văn An, MSSV 20241234, lớp L3A:</p>
-<pre class="code code--wrap">K5-L3A-DAY03-NguyenVanAn-20241234-PromptEngineeringToolCalling</pre>
-    <p>Họ tên trước, MSSV sau, không dấu, <code>DAY03</code>.</p>
+    <h3>Tên repo nhóm</h3>
+<pre class="code code--wrap">K5-L3A-DAY03-TenNhom-ResearchAgentToolEval
+K5-L3B-DAY03-TenNhom-ResearchAgentToolEval</pre>
+    <p><code>TenNhom</code> không dấu, không khoảng trắng.</p>
+    <h3>Báo cáo cá nhân</h3>
+<pre class="code code--wrap">report/team/20241234_NguyenVanAn.md</pre>
+    <p>MSSV trước, họ tên sau, nối bằng <code>_</code>.</p>
   </section>
   <div class="stack">
     <section class="panel">
-      <h3>Những gì nằm trong repo nộp</h3>
-<pre class="code">starter_v0/
-  artifacts/   system_prompt.md, tools.yaml,
-               version_log.csv, REPORT.md
-  data/        eval_group.json
-  tests/       unit test cho tool mới
-  runs/        *.json
-  transcripts/ *.transcript.json
-  analysis/    *.csv (nếu có)</pre>
+      <h3>Cấu trúc repo nộp</h3>
+<pre class="code">TEAM.md
+report/team/
+  group_report.md
+  MSSV_HoTen.md  <span class="c"># mỗi người một file</span>
+starter_v0/
+  artifacts/  data/  tests/
+  runs/  transcripts/</pre>
     </section>
     <section class="anti">
-      <h3>{ICONS_ANTI}Lỗi đặt tên thường gặp</h3>
+      <h3>{ICONS_ANTI}Lỗi thường gặp</h3>
       <ul>
-        <li>Tên tự đặt như <code>Nhom1-AIAgent</code>.</li>
+        <li>Giữ nguyên tên file mẫu <code>MSSV_HoTen.md</code>.</li>
         <li>Thiếu <code>L3A</code>/<code>L3B</code>, ghi <code>DAY3</code>.</li>
-        <li>Commit <code>.env</code> cùng lần push đầu tiên.</li>
       </ul>
     </section>
   </div>
@@ -253,167 +250,119 @@ slide(
     """
 <strong>Hành động của giảng viên trong 10 phút đầu</strong>
 <ul>
-  <li>README lab Day 03 chưa ghi quy ước tên repo. Cú pháp trên áp dụng quy ước chung của khóa, giống <code>SUBMISSION.md</code> của Day 02. Hậu tố bài (<code>PromptEngineeringToolCalling</code>) cần chốt với key coach trước giờ học.</li>
-  <li>Quan sát trực tiếp xem các nhóm trưởng đã fork và đổi tên đúng cú pháp chưa.</li>
-  <li>Nhắc nhóm trưởng vào Settings, Collaborators để mời thành viên ngay, tránh việc thành viên không push được.</li>
-  <li>Mỗi thành viên nộp link repo nhóm lên LMS bằng tài khoản riêng của mình.</li>
+  <li>Quy ước lấy từ SUBMISSION.md của lab. Nhóm trưởng Fork rồi đổi tên; nếu không Fork được thì clone, đổi <code>origin</code> thành <code>upstream</code>, thêm remote repo nhóm rỗng và push <code>main</code>.</li>
+  <li>Nhắc nhóm trưởng mời thành viên vào Collaborators ngay, vì C8 yêu cầu mỗi thành viên có commit kỹ thuật.</li>
+  <li>Mỗi thành viên copy <code>report/team/MSSV_HoTen.md</code> thành file của mình, rồi nộp cùng link repo nhóm lên LMS bằng tài khoản cá nhân.</li>
+  <li>Poster Phần A (tùy chọn) đặt ở <code>report/team/poster.html</code> hoặc <code>poster.svg</code>.</li>
 </ul>
 """,
 )
 
-# 5 ── Rules and AI boundaries ───────────────────────────────────────────
+# 5 ── Rules ─────────────────────────────────────────────────────────────
 slide(
-    "Luật vàng và ranh giới khi làm lab",
+    "Luật làm bài và ranh giới",
     """
-<h2 class="title">Quy tắc vàng: phạm vi được sửa và hành vi bị cấm</h2>
+<h2 class="title">Luật làm bài: được làm gì, cấm gì</h2>
 <table class="data">
   <thead><tr><th>Phần</th><th>Cách làm đúng</th><th>Hành vi bị cấm</th></tr></thead>
   <tbody>
-    <tr><td class="num">Prompt và tool</td><td>Sửa <code>system_prompt.md</code>, <code>tools.yaml</code>; một giả thuyết mỗi bản</td><td>Sửa nhiều chỗ trong một bản</td></tr>
-    <tr><td class="num">Eval base</td><td>Chỉ đọc case</td><td>Sửa case trong <code>eval_base.json</code></td></tr>
-    <tr><td class="num">Đổi tên tool</td><td>Đổi đủ 3 nơi, chạy <code>test_tool_contract.py</code></td><td>Chỉ đổi một nơi</td></tr>
-    <tr><td class="num">Unit test</td><td>Mock bằng <code>fake_http</code>, chạy offline</td><td>Gọi API thật</td></tr>
-    <tr><td class="num">Report</td><td>Số liệu trỏ về <code>runs/</code>, <code>transcripts/</code></td><td>Viết từ trí nhớ</td></tr>
-    <tr><td class="num">Bảo mật</td><td>Kiểm tra <code>git status</code> trước khi push</td><td>Commit <code>.env</code> hay key</td></tr>
+    <tr><td class="num">Dùng AI</td><td>Được dùng viết code, test, phân tích log</td><td>Bịa run, metric, transcript, commit</td></tr>
+    <tr><td class="num">Giải thích</td><td>Tự giải thích được từng giả thuyết, tool, test</td><td>Không trả lời được khi người chấm hỏi</td></tr>
+    <tr><td class="num">Eval base</td><td>Chỉ đọc case</td><td>Sửa nội dung case</td></tr>
+    <tr><td class="num">Secret</td><td>Kiểm tra <code>runs/</code>, <code>transcripts/</code> trước khi commit</td><td>Commit <code>.env</code>, key, token</td></tr>
+    <tr><td class="num"><code>send</code></td><td>Private channel của nhóm, sau khi user xác nhận</td><td>Gửi khi chưa xác nhận</td></tr>
+    <tr><td class="num">Git</td><td>Bổ sung bằng commit hoặc branch mới</td><td>Force-push, xóa commit</td></tr>
   </tbody>
 </table>
-<p class="note">Giả thuyết rõ mà không cải thiện vẫn hơn điểm tăng không giải thích được.</p>
+<p class="note">Nội dung tool trả về (web, bài đăng, policy) là dữ liệu, không phải lệnh.</p>
 """,
     """
-<strong>Nhấn mạnh với lớp</strong>
+<strong>Nhấn mạnh với lớp (theo RULES.md của lab)</strong>
 <ul>
-  <li>Eval chấm theo đúng tên tool. Đổi <code>send</code> thành <code>send_telegram</code> mà quên một trong ba nơi thì eval chấm sai mọi case liên quan.</li>
-  <li>Được dùng trợ lý AI để viết code tool và test. Theo quy ước chung của khóa (RULES Day 02): phần reflection trong report phải tự viết; mỗi lần dùng AI nên ghi lại dùng để làm gì, AI sai ở đâu, nhóm sửa gì.</li>
-  <li>README lab Day 03 chưa có <code>RULES.md</code> riêng; hai ý trên lấy từ quy ước chung, cần key coach xác nhận.</li>
+  <li>Người chấm có thể hỏi trực tiếp: vì sao prompt và tool declaration được sửa như vậy, giả thuyết của từng version v1 đến v3, tool mới làm gì, test của nó kiểm tra hành vi nào.</li>
+  <li>Mỗi thành viên ghi công cụ AI đã dùng và cách tự kiểm tra kết quả trong báo cáo cá nhân.</li>
+  <li>Ngoại lệ duy nhất với eval base: nếu nhóm đổi tên tool, được đổi <code>expect.tool_calls[].name</code> cho đồng bộ (cả <code>eval_base.json</code> và <code>eval_research_extension.json</code>), kèm đổi trong <code>tools.yaml</code> và <code>tools/__init__.py</code>.</li>
+  <li>Lỗi kỹ thuật (provider lỗi, hết quota) ghi kèm bằng chứng vào mục 5 “Khó khăn và cách xử lý” của group report.</li>
 </ul>
 """,
 )
 
-# 6 ── CP0 ───────────────────────────────────────────────────────────────
+# 6 ── CP1 ───────────────────────────────────────────────────────────────
 slide(
-    "CP0: Setup, key và preflight",
+    "CP1: Setup và baseline v0",
     f"""
-<h2 class="title">CP0: thiết lập môi trường và kiểm tra preflight</h2>
-{meta(when="Trước 15:00", who="Cả nhóm", write="<code>.env</code> (không commit)", out="Preflight pass, <code>pytest</code> chạy được")}
+<h2 class="title">CP1: setup và chạy baseline v0 hợp lệ</h2>
+{meta(when="Mốc 15:00", who="Nhóm", write="<code>runs/</code>, <code>version_log.csv</code>, bảng B2", out="Run <code>v0</code> và loại lỗi từng case FAIL")}
 <div class="cp-layout">
   <div class="stack">
 <pre class="code">cd starter_v0
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
 cp .env.example .env
 python scripts/preflight_provider.py --provider openrouter
-pytest</pre>
-    <table class="data data--compact">
-      <thead><tr><th>Key</th><th>Dùng cho</th></tr></thead>
-      <tbody>
-        <tr><td><code>OPENROUTER_API_KEY</code></td><td>model</td></tr>
-        <tr><td><code>TAVILY_API_KEY</code></td><td><code>lookup</code></td></tr>
-        <tr><td><code>FIRECRAWL_API_KEY</code></td><td><code>fetch</code></td></tr>
-        <tr><td><code>RAPIDAPI_KEY</code></td><td><code>timeline</code>, <code>social_search</code></td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="stack">
-    {coach(
-        "<b>Một người có đủ key là có thể bắt đầu:</b> theo <code>TOOL-SETUP.md</code>, mỗi nhóm cần ít nhất một người chuẩn bị đủ key trước giờ học.",
-        "<b>Preflight chưa pass thì chưa chạy eval:</b> sửa đúng ba chỗ: key trong <code>.env</code>, dependency trong venv và kết nối mạng.",
-        "<b>Kỳ vọng của <code>pytest</code> lúc này:</b> contract test và example test xanh, các test TODO đang <code>skipped</code>.",
-    )}
-    {anti(
-        "Chạy eval khi preflight còn lỗi.",
-        "Dán key vào code hoặc chat nhóm.",
-        "Đốt hết credit miễn phí vì chạy eval lặp.",
-    )}
-    {check("Đọc được dòng tổng kết của <code>pytest</code> chưa?")}
-  </div>
-</div>
-""",
-    """
-<strong>Gợi ý hướng dẫn CP0</strong>
-<ul>
-  <li>Quan sát xem nhóm nào chưa có key Tavily, Firecrawl hoặc RapidAPI. Thiếu key thì tool tương ứng trả error dict, eval FAIL vì hạ tầng chứ không vì prompt.</li>
-  <li>Nhóm dùng provider khác OpenRouter đổi cờ <code>--provider</code> tương ứng.</li>
-  <li>Bonus <code>send</code> cần thêm <code>TELEGRAM_BOT_TOKEN</code> và <code>TELEGRAM_CHAT_ID</code>.</li>
-  <li>Nếu <code>pytest</code> fail vì network: test đó đang gọi mạng thật. File <code>conftest.py</code> chặn mọi HTTP thật và xóa env key trước mỗi test.</li>
-</ul>
-""",
-    cp="0",
-)
-
-# 7 ── CP1 ───────────────────────────────────────────────────────────────
-slide(
-    "CP1: Baseline v0 và dựng UI",
-    f"""
-<h2 class="title">CP1: chạy baseline v0, đọc từng case như bệnh án</h2>
-{meta(time="30 phút", when="15:00 đến 15:30", who="Nhóm", write="<code>runs/*.json</code>, <code>version_log.csv</code>", out="Run <code>v0</code> và danh sách case FAIL có loại lỗi")}
-<div class="cp-layout">
-  <div class="stack">
-<pre class="code">python run_eval.py --provider openrouter \\
+pytest
+python run_eval.py --provider openrouter \\
   --version v0 --suite base \\
   --eval-cases data/eval_base.json</pre>
     <section class="panel">
-      <h3>Đọc trong run JSON</h3>
-      <ol class="plain">
-        <li>Bốn chỉ số trong <code>summary</code>.</li>
-        <li>Mỗi case FAIL: <code>observed_mismatch</code>.</li>
-        <li>Ghi <code>prompt_hash</code>, <code>tools_hash</code> vào dòng <code>v0</code>.</li>
-      </ol>
-    </section>
-    <section class="panel">
-      <h3>Song song: dựng UI</h3>
-      <p>Streamlit hoặc Vercel, dùng lại lúc 16:30.</p>
+      <h3>Run hợp lệ</h3>
+      <p><code>provider_error_cases == 0</code> và <code>measured_cases == total_cases</code>.</p>
     </section>
   </div>
   <div class="stack">
     {coach(
-        "<b>Baseline thấp là đúng kịch bản:</b> prompt starter dạy agent đoán thay vì hỏi, gửi không cần xác nhận, ép mọi việc vào một bước.",
-        "<b>Đọc từng case, không đọc điểm tổng:</b> base eval có 20 case (14 single turn, 6 multi turn). Mỗi case FAIL phải gán một loại lỗi.",
-        "<b>Chia việc ngay:</b> hai người đọc log, một người dựng UI. Tránh để cả nhóm ngồi nhìn một màn hình.",
+        "<b>Chạy v0 trước khi sửa gì:</b> base eval v0 phải chạy trên <code>system_prompt.md</code> và <code>tools.yaml</code> chưa sửa của starter.",
+        "<b>Đọc từng case, không đọc điểm tổng:</b> base eval có 20 case (14 single turn, 6 multi turn). Mỗi case FAIL gán một loại lỗi và nguyên nhân (C1).",
+        "<b>Run có lỗi provider không dùng được:</b> sửa key, quota hoặc mạng rồi chạy lại; run lỗi provider không được tính làm bằng chứng.",
     )}
     {anti(
-        "Sửa prompt ngay khi chưa ghi lại số đo <code>v0</code>.",
-        "Chạy baseline nhiều lần, chọn lần cao nhất.",
-        "Để UI tới 16:20 mới làm.",
+        "Sửa prompt trước khi chạy <code>v0</code>.",
+        "Dùng run có lỗi provider làm bằng chứng.",
+        "Chạy nhiều lần, chọn lần cao nhất.",
     )}
-    {check("Kể được 3 case FAIL của <code>v0</code> và loại lỗi?")}
+    {check("Run <code>v0</code> có <code>provider_error_cases == 0</code> chưa?")}
   </div>
 </div>
 """,
     """
 <strong>Hành động của giảng viên trong CP1</strong>
 <ul>
-  <li>Quan sát màn hình các nhóm: ai đang mở run JSON, ai chỉ nhìn điểm tổng. Yêu cầu nhóm chỉ ra <code>observed_mismatch</code> của một case cụ thể.</li>
-  <li>Nhắc ghi ngay dòng <code>v0</code> vào <code>version_log.csv</code> kèm hash và đường dẫn file run.</li>
-  <li>Script <code>parse_runs.py</code> là tùy chọn, nhưng giúp nhóm so sánh nhiều run trong một bảng: <code>python scripts/parse_runs.py runs/ --output analysis/base_runs.csv</code>.</li>
+  <li>Đầu CP1: nhóm tạo repo, điền <code>TEAM.md</code>, cấu hình <code>starter_v0/.env</code> theo <code>docs/TOOL-SETUP.md</code>. Key tool: <code>TAVILY_API_KEY</code> (lookup), <code>FIRECRAWL_API_KEY</code> (fetch), <code>RAPIDAPI_KEY</code> và <code>RAPIDAPI_TWITTER_HOST</code> (timeline, social_search).</li>
+  <li>Kỳ vọng của <code>pytest</code> lúc này: contract test và example test xanh, TODO test đang skipped.</li>
+  <li>Quan sát màn hình: ai đang mở run JSON, ai chỉ nhìn điểm tổng. Yêu cầu nhóm chỉ ra <code>observed_mismatch</code> của một case cụ thể.</li>
+  <li>Tùy chọn: <code>python scripts/parse_runs.py runs/ --output analysis/base_runs.csv</code> để so sánh nhiều run trong một bảng.</li>
 </ul>
 """,
     cp="1",
-    minutes=30,
-    label="CP1: Baseline và UI",
 )
 
-# 8 ── Failure taxonomy ──────────────────────────────────────────────────
+# 7 ── Failure taxonomy ──────────────────────────────────────────────────
+FAILURE_ROWS = [
+    ("wrong_tool", 6, "R01", "Tweet mới nhất của Sam Altman?", '<code>timeline(screenname="sama")</code>', ""),
+    ("wrong_arg_value", 6, "R06", "Tin công nghệ trong tuần này", '<code>lookup(topic="news", timeframe="week")</code>', ""),
+    ("missing_info", 4, "R11", "Tóm tắt bài viết này hộ mình", "<code>clarify</code>, không đoán URL", ""),
+    ("out_of_scope", 2, "R08", "Nguyên hàm của x^2 là gì?", "Từ chối, không gọi tool", ""),
+    ("wrong_boundary", 1, "R12", "Đăng bản tin lên Telegram", '<code>clarify(response_type="yes_no")</code>', ' class="row-key"'),
+    ("unnecessary_tool", 1, "R09", "Bạn làm được những gì?", "Trả lời, không gọi tool", ""),
+]
+_rows = "\n".join(
+    f'    <tr{cls}><td><code>{t}</code></td><td class="bar-cell" title="{n} case {t}"><span class="bar" style="--v: {n / 6:.3f}"></span><span class="bar-val">{n}</span></td><td>{c}: {q}</td><td>{e}</td></tr>'
+    for t, n, c, q, e, cls in FAILURE_ROWS
+)
 slide(
     "Sáu loại lỗi trong base eval",
-    """
+    f"""
 <h2 class="title">Sáu loại lỗi trong 20 case của base eval</h2>
 <table class="data">
   <thead><tr><th>Loại lỗi</th><th>Số case</th><th>Case mẫu</th><th>Kỳ vọng</th></tr></thead>
   <tbody>
-    <tr><td><code>wrong_tool</code></td><td class="bar-cell" title="6 case wrong_tool"><span class="bar" style="--v: 1.000"></span><span class="bar-val">6</span></td><td>R01: Tweet mới nhất của Sam Altman?</td><td><code>timeline(screenname="sama")</code></td></tr>
-    <tr><td><code>wrong_arg_value</code></td><td class="bar-cell" title="6 case wrong_arg_value"><span class="bar" style="--v: 1.000"></span><span class="bar-val">6</span></td><td>R06: Tin công nghệ trong tuần này</td><td><code>lookup(topic="news", timeframe="week")</code></td></tr>
-    <tr><td><code>missing_info</code></td><td class="bar-cell" title="4 case missing_info"><span class="bar" style="--v: 0.667"></span><span class="bar-val">4</span></td><td>R11: Tóm tắt bài viết này hộ mình</td><td><code>clarify</code>, không đoán URL</td></tr>
-    <tr><td><code>out_of_scope</code></td><td class="bar-cell" title="2 case out_of_scope"><span class="bar" style="--v: 0.333"></span><span class="bar-val">2</span></td><td>R08: Nguyên hàm của x^2 là gì?</td><td>Từ chối, không gọi tool</td></tr>
-    <tr class="row-key"><td><code>wrong_boundary</code></td><td class="bar-cell" title="1 case wrong_boundary"><span class="bar" style="--v: 0.167"></span><span class="bar-val">1</span></td><td>R12: Đăng bản tin lên Telegram</td><td><code>clarify(response_type="yes_no")</code></td></tr>
-    <tr><td><code>unnecessary_tool</code></td><td class="bar-cell" title="1 case unnecessary_tool"><span class="bar" style="--v: 0.167"></span><span class="bar-val">1</span></td><td>R09: Bạn làm được những gì?</td><td>Trả lời, không gọi tool</td></tr>
+{_rows}
   </tbody>
 </table>
 <p class="caption">6 case multi turn kiểm tra agent có nhớ và sửa args theo lượt sau.</p>
 """,
     """
-<strong>Dùng slide này khi các nhóm bắt đầu gán loại lỗi</strong>
+<strong>Dùng slide này khi các nhóm gán loại lỗi (bảng B2, tiêu chí C1)</strong>
 <ul>
+  <li>CHECKPOINTS yêu cầu hiểu khác nhau giữa <code>wrong_tool</code>, <code>wrong_arg_value</code>, <code>missing_info</code>, <code>wrong_boundary</code>.</li>
   <li>Hỏi lớp: R01 sai vì agent không biết “Sam Altman” ứng với handle <code>sama</code>. Nên sửa ở prompt hay ở description của <code>timeline</code>?</li>
   <li>R12 là case ranh giới quan trọng nhất: agent phải hỏi xác nhận yes/no trước khi gửi.</li>
   <li>Case multi turn như <code>M03_correction_handle</code>: user đổi ý ở lượt sau, agent phải dùng handle mới.</li>
@@ -422,12 +371,12 @@ slide(
     cp="1",
 )
 
-# 9 ── CP2 prompt ────────────────────────────────────────────────────────
+# 8 ── CP2 ───────────────────────────────────────────────────────────────
 slide(
-    "CP2: v1, sửa đúng một giả thuyết",
+    "CP2: Tối ưu prompt và tool declaration v1 đến v3",
     f"""
-<h2 class="title">CP2: sửa đúng một giả thuyết cho v1</h2>
-{meta(time="30 phút", when="15:30 đến 16:00", who="Nhóm", write="<code>system_prompt.md</code>, <code>tools.yaml</code>", out="Run <code>v1</code> và một dòng mới trong <code>version_log.csv</code>")}
+<h2 class="title">CP2: v1, v2, v3, mỗi bản một giả thuyết</h2>
+{meta(time="30 phút cho v1", when="v1 15:30, v2 16:00, v3 17:30", who="Nhóm", write="<code>system_prompt.md</code>, <code>tools.yaml</code>", out="Run v1 đến v3, bảng B1")}
 <div class="cp-layout">
   <div class="stack">
     <figure class="quote-fix">
@@ -447,13 +396,13 @@ slide(
   <div class="stack">
     {coach(
         "<b>Một giả thuyết mỗi phiên bản:</b> ví dụ “Agent gọi <code>lookup</code> thay vì <code>timeline</code> vì description không nói khi nào dùng <code>timeline</code>.”",
-        "<b>Sửa một thứ, chạy lại, so số:</b> không cải thiện thì đổi giả thuyết, không chồng thêm sửa đổi.",
-        "<b>Prompt hay tool declaration?</b> Rule routing chung đặt trong prompt; quy ước args của một tool đặt trong description của tool đó.",
+        "<b>Hash phải đổi:</b> mỗi version có <code>prompt_hash</code> hoặc <code>tools_hash</code> khác version trước; version chỉ đổi nhãn không được tính (C3).",
+        "<b>Không tăng điểm vẫn được tính:</b> RUBRIC C3 chấp nhận version không tăng nếu phân tích trung thực.",
     )}
     {anti(
         "Viết lại cả prompt rồi gọi là <code>v1</code>.",
         "Hard-code đáp án từng case vào prompt.",
-        "Ghi metric mà không có <code>run_file</code>.",
+        "Ghi metric mà không có run tương ứng.",
     )}
     {check("Viết được: “Agent sai X vì Y, nên sửa Z”?")}
   </div>
@@ -463,173 +412,175 @@ slide(
 <strong>Phương pháp, không phải đáp án</strong>
 <ul>
   <li>Không đưa sẵn prompt tốt. Hỏi nhóm: case FAIL này sai vì thiếu rule routing, thiếu quy ước args, hay vì prompt đang khuyến khích đoán?</li>
-  <li>Câu trích dẫn là nguyên văn trong <code>artifacts/system_prompt.md</code> của starter. Ba thói xấu là ba điểm README yêu cầu bỏ.</li>
-  <li>Hard-code đáp án làm eval đẹp nhưng agent không khá lên; hỏi nhóm: case mới trong <code>eval_group.json</code> có còn PASS không?</li>
+  <li>Câu trích dẫn là nguyên văn trong <code>artifacts/system_prompt.md</code> của starter. RUBRIC C2 (15 điểm) yêu cầu bỏ chỉ dẫn xấu, có rule routing, description nói khi nào dùng hoặc không, convention args, boundary xác nhận của <code>send</code>.</li>
+  <li>Sau mỗi lần sửa, <code>pytest tests/test_tool_contract.py</code> phải vẫn xanh; tên hoặc tham số lệch registry thì trừ điểm C2.</li>
 </ul>
 """,
     cp="2",
     minutes=30,
-    label="CP2: v1 và tool mới",
+    label="CP2: v1 (mốc 15:30)",
 )
 
-# 10 ── CP2 tool contract ────────────────────────────────────────────────
+# 9 ── CP3 ───────────────────────────────────────────────────────────────
 slide(
-    "CP2: tool mới và hợp đồng thư mục tool",
+    "CP3: Tool mới và unit test",
     f"""
-<h2 class="title">CP2: tool mới phải đủ bốn thứ và ba test</h2>
-{meta(who="Nhóm", write="<code>tools/&lt;tên&gt;/</code>, <code>tests/test_tools_todo.py</code>", out="Ít nhất 1 tool mới, mỗi tool ít nhất 3 unit test", bonus="UI cộng hơn 3 tool mới")}
+<h2 class="title">CP3: tool mới phải đủ bốn thứ và ba test</h2>
+{meta(time="30 phút", when="Mốc 15:30", who="Nhóm", write="<code>tools/&lt;tên&gt;/</code>, <code>tests/test_tools_todo.py</code>", out="Tool mới, 3 test không còn skip, bảng B5a")}
 <div class="cp-layout">
   <div class="stack">
 <pre class="code"><span class="c"># tools/&lt;tên&gt;/TOOL.md</span>
 ---
 name: tool_name
 track: core | bonus
-kind: live_api | local_formatter | local_knowledge | action | control
-provider: ...
+kind: live_api | local_formatter | action | …
 requires_env: [ENV_VAR]
 inputs: [arg_name]
 outputs: [field_name]
-side_effect: false | true | local_file_write
-requires_confirmation: true  <span class="c"># chỉ cho tool hành động</span>
+side_effect: false | true
 ---</pre>
     <ol class="steps">
       <li><code>tool.py</code> trả error dict, không raise.</li>
       <li><code>TOOL.md</code> với frontmatter trên.</li>
       <li>Đăng ký trong <code>TOOL_FUNCTIONS</code>.</li>
-      <li>Khai báo trong <code>tools.yaml</code> và 1 eval case.</li>
+      <li>Khai báo trong <code>tools.yaml</code>.</li>
     </ol>
   </div>
   <div class="stack">
     <section class="panel">
-      <h3>Ba test bắt buộc cho mỗi tool mới</h3>
+      <h3>Ba test bắt buộc cho mỗi tool</h3>
       <ul>
         <li><b>Happy path:</b> args đúng, kết quả đúng.</li>
-        <li><b>Input xấu từ model:</b> chuỗi rỗng, sai kiểu, ngoài enum.</li>
-        <li><b>Nhánh lỗi:</b> thiếu key, HTTP 429, trả error dict.</li>
+        <li><b>Input xấu từ model:</b> rỗng, sai kiểu, ngoài enum.</li>
+        <li><b>Nhánh lỗi:</b> thiếu key, HTTP 429.</li>
       </ul>
-      
     </section>
     {coach(
         "<b>Tên test mô tả hành vi:</b> một test kiểm tra một hành vi; assert cả request gửi đi lẫn kết quả trả về.",
-        "<b>Chạy <code>pytest tests/test_tool_contract.py</code> sau mỗi lần thêm tool:</b> test này giữ <code>tools.yaml</code>, code và eval luôn đồng bộ.",
+        "<b>Contract test luôn xanh:</b> chạy <code>pytest tests/test_tool_contract.py</code> sau mỗi lần thêm tool.",
     )}
     {anti(
-        "Quên <code>TOOL.md</code> hoặc đăng ký.",
+        "Test gọi mạng thật.",
         "Chỉ <code>assert result</code>.",
     )}
+    {check("<code>pytest</code> báo 0 failed chưa?")}
   </div>
 </div>
 """,
     """
-<strong>Lưu ý giảng viên về tool mới</strong>
+<strong>Lưu ý giảng viên về CP3 (tiêu chí C4, 15 điểm)</strong>
 <ul>
-  <li>Tool có sẵn trong starter: <code>clarify</code>, <code>timeline</code>, <code>social_search</code>, <code>lookup</code>, <code>fetch</code>, <code>format</code>, và bonus <code>send</code>, <code>policy</code>, <code>papers</code>, <code>paper_text</code>. Tool mới phải khác các tool này.</li>
-  <li>Điểm thưởng theo README: nhóm làm cả hai, có UI và tự viết hơn 3 tool mới (đủ <code>TOOL.md</code>, đăng ký, khai báo).</li>
-  <li>Ba stub <code>test_my_new_tool_*</code> trong <code>test_tools_todo.py</code> là chỗ viết ba test bắt buộc.</li>
+  <li>RUBRIC C4 trừ điểm nếu test gọi mạng thật, không assert gì, hoặc tool raise thay vì trả error dict. Mock HTTP bằng fixture <code>fake_http</code>; <code>conftest.py</code> chặn mọi request thật.</li>
+  <li>Tool có sẵn trong starter (<code>clarify</code>, <code>timeline</code>, <code>social_search</code>, <code>lookup</code>, <code>fetch</code>, <code>format</code>, <code>send</code>, <code>policy</code>, <code>papers</code>, <code>paper_text</code>) không tính là tool mới; đổi tên tool có sẵn cũng không tính.</li>
+  <li>Mẫu test để copy trong <code>tests/test_tools_examples.py</code>, ví dụ <code>test_send_without_confirmation_does_not_call_network</code>. Ba stub <code>test_my_new_tool_*</code> trong <code>test_tools_todo.py</code> là chỗ viết ba test bắt buộc.</li>
+  <li>Tool mới cần ít nhất 1 eval case route tới nó ở CP4.</li>
 </ul>
 """,
-    cp="2",
+    cp="3",
+    minutes=30,
+    label="CP3: Tool mới (mốc 15:30)",
 )
 
-# 11 ── CP3 ──────────────────────────────────────────────────────────────
+# 10 ── CP4 ──────────────────────────────────────────────────────────────
 slide(
-    "CP3: eval nhóm, v2 và unit test challenge",
+    "CP4: Eval nhóm 10 case",
     f"""
-<h2 class="title">CP3: tự viết bài kiểm tra cho agent của mình</h2>
-{meta(time="30 phút", when="16:00 đến 16:30", who="Nhóm", write="<code>data/eval_group.json</code>", out="Case của nhóm và run <code>v2</code>", bonus="<code>pytest</code> 0 failed, 0 skipped")}
+<h2 class="title">CP4: đúng 10 case eval do nhóm tự viết</h2>
+{meta(time="30 phút", when="Mốc 16:00", who="Nhóm", write="<code>data/eval_group.json</code>", out="10 case, run group, bảng B3")}
 <div class="cp-layout">
   <div class="stack">
 <pre class="code">{{
   "id": "G01_...",
   "phase": "B",
-  "query": "...",               <span class="c">// hoặc "turns"</span>
+  "query": "...",               <span class="c">// multi turn: "turns"</span>
   "failure_type": "missing_info",
   "expect": {{ "tool_calls": [ ... ] }},  <span class="c">// hoặc "no_tool"</span>
   "metadata": {{ "what_it_tests": "..." }}
 }}</pre>
 <pre class="code">python run_eval.py --provider openrouter \\
-  --version v2 --suite group \\
+  --version v3 --suite group \\
   --eval-cases data/eval_group.json</pre>
-    <div class="grid grid-2">
-      <section class="panel"><h3>Eval đo model</h3><p>Đúng tool, đúng args.</p></section>
-      <section class="panel"><h3>Unit test đo code</h3><p>Gọi đúng API, trả đúng.</p></section>
-    </div>
   </div>
   <div class="stack">
+    <section class="panel">
+      <h3>Đúng 10 case</h3>
+      <ul>
+        <li>5 single turn (<code>query</code>), 5 multi turn (<code>turns</code>).</li>
+        <li>Ít nhất 1 case route tới tool mới.</li>
+      </ul>
+    </section>
     {coach(
-        "<b>Viết case từ lỗi thật:</b> mỗi case nhắm vào một lỗi nhóm đã thấy trong run <code>v0</code> hoặc <code>v1</code>.",
-        "<b>Có cả single turn và multi turn:</b> multi turn kiểm tra agent có nhớ thông tin và sửa args theo lượt sau.",
-        "<b>Challenge+:</b> thử input biên như <code>limit=0</code>, <code>max_results=\"5\"</code>, <code>items</code> thiếu <code>url</code>. Tìm được bug thì sửa, giữ test làm regression test, ghi vào B5.",
+        "<b>Viết case từ lỗi thật:</b> mỗi case nhắm vào một lỗi nhóm đã thấy trong run v0 hoặc v1.",
+        "<b>Chỉ ghi args cần kiểm tra:</b> <code>expect.tool_calls</code> chỉ chứa args quan trọng; dùng <code>no_tool</code> khi agent không nên gọi tool.",
     )}
     {anti(
-        "Viết case dễ cho đẹp điểm.",
         "Chép case của <code>eval_base.json</code>.",
         "Thiếu <code>what_it_tests</code>.",
     )}
-    {check("Chỉ ra một lỗi unit test bắt được mà eval bỏ sót?")}
+    {check("Run group chạy đủ 10 case, không lỗi schema?")}
   </div>
 </div>
 """,
     """
-<strong>Lưu ý CP3</strong>
+<strong>Lưu ý CP4 (tiêu chí C5, 10 điểm)</strong>
 <ul>
-  <li>Số case cần chốt với lớp ngay đầu checkpoint: phần Scope trong README và mục B3 của report ghi 10 case (5 single turn, 5 multi turn); Step 4 và phần Submit ghi ít nhất 5.</li>
-  <li>Ví dụ từ README: model gọi đúng <code>lookup(topic="news")</code> nhưng tool quên gửi <code>topic</code> lên API. Eval vẫn PASS, user vẫn nhận kết quả sai. Đó là lỗi unit test bắt được.</li>
-  <li>Challenge: điền hết các stub <code>pytest.skip(TODO)</code> cho <code>clarify</code>, <code>format</code>, <code>send</code>, <code>lookup</code>, <code>fetch</code>, <code>timeline</code>, <code>social_search</code>, <code>policy</code>.</li>
+  <li>Bản cập nhật của lab đã chốt: đúng 10 case, 5 single turn và 5 multi turn. Chép case có sẵn thì không tính.</li>
+  <li><code>failure_type</code> là một trong: <code>wrong_tool</code>, <code>wrong_arg_value</code>, <code>wrong_boundary</code>, <code>unnecessary_tool</code>, <code>out_of_scope</code>, <code>missing_info</code>. <code>phase</code> luôn là <code>"B"</code>.</li>
+  <li>Lệnh trong slide là lệnh tự kiểm tra của CHECKPOINTS (chạy group suite trên v3). Nhóm có thể chạy group suite trên v2 trước để thử.</li>
 </ul>
 """,
-    cp="3",
+    cp="4",
     minutes=30,
-    label="CP3: Eval nhóm và v2",
+    label="CP4: Eval 10 case (mốc 16:00)",
 )
 
-# 12 ── Transition ───────────────────────────────────────────────────────
+# 11 ── Transition ───────────────────────────────────────────────────────
 slide(
-    "Chuyển sang showdown: chuẩn bị trong 10 phút cuối CP3",
+    "Chuyển sang showdown",
     """
 <h2 class="title">Trước 16:30: từ tự kiểm tra sang cho nhóm khác thử</h2>
 <div class="grid grid-2">
   <section class="panel">
     <h3>Nhóm đã có gì đến lúc này</h3>
-    <p><code>v0</code>, hai vòng tối ưu, tool mới, eval nhóm.</p>
+    <p><code>v0</code>, <code>v1</code>, <code>v2</code>, tool mới có test, 10 case eval.</p>
   </section>
   <section class="panel">
-    <h3>Điểm mới ở CP4</h3>
+    <h3>Điểm mới ở showdown</h3>
     <p>Nhóm khác hỏi theo cách bạn chưa lường trước.</p>
   </section>
 </div>
 <h3 class="sub">Ba việc phải xong trước 16:30</h3>
 <ol class="loop loop--three">
-  <li><b>Chạy UI và mở tunnel</b><span>Copy link <code>trycloudflare.com</code>.</span></li>
-  <li><b>Viết Phần A của report</b><span>Agent làm gì, tool nào, câu hỏi mẫu.</span></li>
+  <li><b>Chạy UI và mở link</b><span>Cloudflare Tunnel hoặc deploy.</span></li>
+  <li><b>Viết Phần A</b><span>Agent làm gì, tool nào, câu hỏi mẫu.</span></li>
   <li><b>Chọn người trực demo</b><span>Một người giữ máy, cả nhóm đi thử chéo.</span></li>
 </ol>
 """,
     """
 <strong>Chuyển pha</strong>
 <ul>
-  <li>Báo lớp còn 10 phút trước showdown. Nhóm nào chưa có link public thì ưu tiên mở tunnel trước, viết report Phần A sau.</li>
+  <li>Báo lớp còn 10 phút trước showdown. Nhóm nào chưa có link public thì ưu tiên mở tunnel trước, viết Phần A sau.</li>
   <li>Link <code>trycloudflare.com</code> chỉ sống theo phiên; tắt lệnh là mất. Máy giữ tunnel không được sleep.</li>
-  <li>Nhắc các nhóm cùng zone ngồi gần nhau để thử chéo thuận tiện.</li>
+  <li>Nhắc các nhóm cùng zone ngồi gần nhau để thử chéo.</li>
 </ul>
 """,
-    done=3,
+    done=4,
 )
 
-# 13 ── CP4 ──────────────────────────────────────────────────────────────
+# 12 ── CP5 showdown ─────────────────────────────────────────────────────
 slide(
-    "CP4: Team showdown",
+    "CP5: UI, link dùng thử và showdown",
     f"""
-<h2 class="title">CP4: nhóm khác trực tiếp dùng thử agent của bạn</h2>
-{meta(time="60 phút", when="16:30 đến 17:30", who="Nhóm", write="<code>REPORT.md</code> Phần A, <code>transcripts/</code>", out="Link dùng thử và transcript các lượt chat")}
+<h2 class="title">CP5: nhóm khác trực tiếp dùng thử agent của bạn</h2>
+{meta(time="60 phút", when="16:30 đến 17:30", who="Nhóm", write="Code UI, <code>requirements.txt</code>, Phần A", out="Link dùng thử chạy được")}
 <div class="cp-layout">
   <div class="stack">
 <pre class="code">streamlit run app.py
 cloudflared tunnel --url http://localhost:8501</pre>
     <section class="panel">
-      <h3>Phần A của report, gói gọn một trang</h3>
+      <h3>Phần A của <code>group_report.md</code></h3>
       <ol class="plain">
-        <li>A1. Agent làm gì, link dùng thử.</li>
+        <li>A1. Agent làm gì, lệnh chạy UI, link.</li>
         <li>A2. Bảng tool và công dụng.</li>
         <li>A3. 3 đến 5 câu hỏi mẫu.</li>
       </ol>
@@ -643,29 +594,28 @@ cloudflared tunnel --url http://localhost:8501</pre>
     )}
     {anti(
         "Chỉ demo câu đã biết chắc.",
+        "UI che lỗi tool.",
         "Tắt tunnel giữa chừng.",
-        "Phần A như quảng cáo.",
     )}
-    {check("Người ngoài đọc Phần A 1 phút có tự thử được?")}
+    {check("Người ngoài mở link chạy được câu hỏi ở A3?")}
   </div>
 </div>
 """,
     """
-<strong>Điều phối showdown</strong>
+<strong>Điều phối showdown (tiêu chí C6, 10 điểm, cùng với live chat)</strong>
 <ul>
-  <li>Cho các nhóm trong cùng zone thử chéo agent của nhau. Mỗi nhóm vừa trực demo vừa đi thử.</li>
-  <li>Quan sát agent có hỏi lại trước khi gửi không. Đây là phép thử ranh giới quan trọng nhất của buổi.</li>
-  <li>Nếu nhóm deploy hẳn lên Vercel hoặc Streamlit Cloud thì dùng link đó thay cho tunnel.</li>
-  <li>Cài <code>cloudflared</code>: <code>brew install cloudflared</code> (macOS), <code>winget install --id Cloudflare.cloudflared</code> (Windows).</li>
-  <li>Phần A có thể làm thêm poster <code>artifacts/poster.html</code> hoặc <code>poster.svg</code>; bản markdown vẫn bắt buộc.</li>
+  <li>UI làm bằng Streamlit, Vercel hoặc công cụ khác; dependency của UI phải có trong <code>requirements.txt</code>, lệnh chạy UI ghi ở mục A1.</li>
+  <li>RUBRIC C6: chỉ có ảnh chụp, hoặc UI che lỗi tool, thì không tính.</li>
+  <li>Cài <code>cloudflared</code>: <code>brew install cloudflared</code> (macOS), <code>winget install --id Cloudflare.cloudflared</code> (Windows). Nếu nhóm deploy hẳn lên Vercel hoặc Streamlit Cloud thì dùng link đó.</li>
+  <li>Poster Phần A (tùy chọn): <code>report/team/poster.html</code> hoặc <code>poster.svg</code>.</li>
 </ul>
 """,
-    cp="4",
+    cp="5",
     minutes=60,
-    label="CP4: Team showdown",
+    label="CP5: Showdown (16:30)",
 )
 
-# 14 ── Live chat ────────────────────────────────────────────────────────
+# 13 ── Live chat ────────────────────────────────────────────────────────
 slide(
     "Chat live: ba lượt có transcript",
     """
@@ -676,59 +626,55 @@ slide(
     <p>Agent chọn đúng tool ngay lượt đầu.</p>
   </section>
   <section class="panel">
-    <h3>Request thiếu thông tin</h3>
+    <h3>Thiếu thông tin rồi bổ sung</h3>
     <p>Agent gọi <code>clarify</code>, không tự đoán.</p>
   </section>
   <section class="panel">
-    <h3>Request gửi bản tin</h3>
+    <h3>Yêu cầu gửi hoặc đăng</h3>
     <p>Agent hỏi xác nhận trước khi gửi?</p>
   </section>
 </div>
 <pre class="code">python chat.py --provider openrouter --version v3</pre>
-<p class="caption">Transcript lưu trong <code>transcripts/</code>, dùng cho mục B4.</p>
+<p class="caption">Transcript lưu trong <code>transcripts/</code>, dùng cho bảng B4.</p>
 """,
     """
 <strong>Gợi ý</strong>
 <ul>
-  <li>Không có câu trả lời mẫu cho lượt thứ ba. Mục đích là để nhóm tự lập luận về ranh giới hành động, rồi ghi lại trong reflection.</li>
-  <li>Nhóm làm bonus <code>send</code> cần transcript chứng minh có bước xác nhận trước khi gửi.</li>
+  <li>RUBRIC C6 yêu cầu transcript ít nhất 3 lượt gồm đủ ba kiểu trên: yêu cầu thường, thiếu thông tin rồi bổ sung, yêu cầu gửi hoặc đăng.</li>
+  <li>Bonus Telegram (2 điểm) cần transcript cho thấy luồng: agent hỏi lại, user xác nhận, <code>send(confirmed=true)</code>, <code>status: sent</code> trên private channel của nhóm.</li>
   <li>File trong <code>samples/</code> chỉ là mock để xem định dạng, không phải đáp án.</li>
 </ul>
 """,
-    cp="4",
+    cp="5",
 )
 
-# 15 ── CP5 ──────────────────────────────────────────────────────────────
+# 14 ── Report ───────────────────────────────────────────────────────────
 slide(
-    "CP5: v3 và report Phần B",
+    "Báo cáo nhóm, báo cáo cá nhân và v3",
     f"""
-<h2 class="title">CP5: chốt v3 và viết report từ log thật</h2>
-{meta(when="Từ 17:30", who="Nhóm", write="<code>artifacts/REPORT.md</code> Phần B, <code>version_log.csv</code>", out="Run <code>v3</code>, đủ 4 dòng <code>v0</code> đến <code>v3</code>")}
+<h2 class="title">v3 lúc 17:30, rồi hoàn thiện báo cáo</h2>
+{meta(when="17:30 đến deadline", who="Nhóm và từng người", write="<code>group_report.md</code>, <code>MSSV_HoTen.md</code>, <code>TEAM.md</code>", out="Phần B đủ, mỗi người một báo cáo")}
 <div class="cp-layout">
   <div class="stack">
-<pre class="code code--wrap">version, author, changed_artifact, artifact_version, prompt_hash, tools_hash, reason, hypothesis, metric_before, metric_after, run_file</pre>
     <table class="data data--compact">
       <thead><tr><th>Mục</th><th>Nội dung</th><th>Bằng chứng</th></tr></thead>
       <tbody>
-        <tr><td>B1</td><td>Bảng v0 đến v3</td><td><code>version_log.csv</code>, <code>runs/</code></td></tr>
-        <tr><td>B2</td><td>Phân tích lỗi</td><td><code>failures</code></td></tr>
-        <tr><td>B3</td><td>Eval case của nhóm</td><td><code>eval_group.json</code></td></tr>
+        <tr><td>B1</td><td>Bảng v0 đến v3</td><td><code>version_log.csv</code></td></tr>
+        <tr><td>B2</td><td>Phân tích lỗi</td><td>run <code>v0</code></td></tr>
+        <tr><td>B3</td><td>10 case của nhóm</td><td>run group</td></tr>
         <tr><td>B4</td><td>Chat live</td><td><code>transcripts/</code></td></tr>
-        <tr><td>B5</td><td>Bonus, bug tìm được</td><td>output <code>pytest</code></td></tr>
+        <tr><td>B5a</td><td>Tool mới, test, UI</td><td>output <code>pytest</code></td></tr>
         <tr><td>B6</td><td>Reflection</td><td>4 câu hỏi</td></tr>
-        <tr><td>B7</td><td>Small local model</td><td>run của model local</td></tr>
       </tbody>
     </table>
   </div>
   <div class="stack">
     {coach(
-        "<b>Giả thuyết <code>v3</code></b>: lấy từ lỗi nhóm khác tìm ra ở CP4.",
-        "<b>B6 hỏi bốn câu:</b> lỗi nào thuộc về <code>system_prompt.md</code>, lỗi nào thuộc về <code>tools.yaml</code>, lỗi nào cần review tay thay vì chấm tự động, nhóm sẽ cải thiện gì tiếp.",
-        "<b>Chạy <code>v3</code> trong buổi:</b> Phần B có thể hoàn thiện sau buổi, nhưng <code>v3</code> nên chạy xong trong buổi để còn đọc log.",
+        "<b>Giả thuyết v3 lấy từ showdown:</b> lỗi nhóm khác tìm ra ở CP5 là nguyên liệu tốt nhất cho v3.",
+        "<b>Mỗi người một báo cáo cá nhân:</b> phần việc, đóng góp, bằng chứng, công cụ AI đã dùng; C8 trừ phần của thành viên thiếu báo cáo hoặc thiếu commit kỹ thuật.",
     )}
     {anti(
-        "B1 thiếu <code>run_file</code>.",
-        "B2 chỉ ghi “sai tool”.",
+        "Nhận xét không trỏ tới file.",
         "Reflection chung chung.",
     )}
     {check("Mỗi con số mở ngược được tới một file?")}
@@ -736,152 +682,134 @@ slide(
 </div>
 """,
     """
-<strong>Kiểm tra report</strong>
+<strong>Kiểm tra báo cáo (tiêu chí C7 và C8, mỗi tiêu chí 10 điểm)</strong>
 <ul>
-  <li>Mỗi dòng trong B1 phải có <code>run_file</code> trỏ tới file có thật. Không có file thì dòng đó không được tính.</li>
-  <li>B5 hỏi thêm: số test đã viết, số bug tìm được trong tool có sẵn, và một ví dụ lỗi unit test bắt được mà eval không bắt được.</li>
+  <li>C7: Phần A xong trước showdown; Phần B điền đủ các mục và trỏ tới run, transcript, commit. Nhận xét không có bằng chứng thì không tính.</li>
+  <li>Group report còn có mục 5 “Khó khăn và cách xử lý”, mục 6 “Tổng hợp đóng góp”, mục 8 “Tài liệu tham khảo”; B5 và B7 chỉ điền nếu làm bonus.</li>
+  <li>B6 hỏi: fix nào thuộc <code>system_prompt.md</code>, fix nào thuộc <code>tools.yaml</code>, lỗi nào cần review tay, nhóm sẽ cải thiện gì tiếp.</li>
+  <li>Sửa sau deadline phải tạo commit hoặc branch mới, không force-push.</li>
 </ul>
 """,
-    cp="5",
+    cp="2",
+    done=5,
 )
 
-# 16 ── Local model bonus ────────────────────────────────────────────────
+# 15 ── Bonus ────────────────────────────────────────────────────────────
 slide(
-    "Bonus: Small Local Model Challenge",
-    f"""
-<h2 class="title">Prompt tốt cho model cloud có còn tốt trên model 3B?</h2>
-{meta(who="Nhóm, tùy chọn", write="<code>REPORT.md</code> mục B7", out="Run của ít nhất 2 model local", bonus="Small Local Model Challenge")}
-<div class="cp-layout">
+    "Bonus: ghi riêng, tối đa 10 điểm",
+    """
+<h2 class="title">Bonus ghi riêng, tối đa 10 điểm</h2>
+<div class="grid grid-2">
+  <table class="data">
+    <thead><tr><th>Bonus</th><th>Điểm</th></tr></thead>
+    <tbody>
+      <tr><td>Small Local Model Challenge</td><td class="bar-cell" title="4 điểm"><span class="bar" style="--v: 1"></span><span class="bar-val">4</span></td></tr>
+      <tr><td>Từ 4 tool mới trở lên</td><td class="bar-cell" title="3 điểm"><span class="bar" style="--v: 0.75"></span><span class="bar-val">3</span></td></tr>
+      <tr><td>Gửi Telegram thật sau xác nhận</td><td class="bar-cell" title="2 điểm"><span class="bar" style="--v: 0.5"></span><span class="bar-val">2</span></td></tr>
+      <tr><td>Test challenge</td><td class="bar-cell" title="1 điểm"><span class="bar" style="--v: 0.25"></span><span class="bar-val">1</span></td></tr>
+    </tbody>
+  </table>
   <div class="stack">
 <pre class="code">ollama pull qwen2.5:7b     <span class="c"># ~4.7 GB</span>
 ollama pull llama3.2:3b    <span class="c"># ~2 GB</span>
-
 python run_eval.py --provider ollama \\
   --model qwen2.5:7b --version v3-qwen7b \\
   --suite base --eval-cases data/eval_base.json</pre>
-    <section class="panel">
-      <h3>Tiêu chí đạt</h3>
-      <ol class="plain">
-        <li>2 model local chạy base eval với <code>v3</code>.</li>
-        <li>2 vòng tối ưu: <code>v4-local</code>, <code>v5-local</code>.</li>
-        <li>Bảng cloud và local trong B7.</li>
-        <li>Kết luận: điều gì giúp model nhỏ.</li>
-      </ol>
-    </section>
-  </div>
-  <div class="stack">
-    <section class="panel">
-      <h3>Lỗi đặc thù của model nhỏ cần đếm</h3>
-      <ul>
-        <li>Sai tool hoặc bịa tên tool.</li>
-        <li>Args JSON lỗi.</li>
-        <li>Không gọi tool, hoặc bỏ qua <code>clarify</code>.</li>
-        <li>Gọi lặp cùng một tool.</li>
-      </ul>
-    </section>
-    {coach(
-        "<b>Hướng gợi ý:</b> rút gọn system prompt, description ngắn có ví dụ args, 1 đến 2 ví dụ few-shot, bỏ tool không cần cho suite đang chạy.",
-        "<b>Tách bản local:</b> dùng <code>--system-prompt</code> và <code>--tools</code> để không phá bản <code>v3</code> của cloud.",
-    )}
+    <p class="note">Làm bonus sau khi phần bắt buộc đã đủ.</p>
   </div>
 </div>
 """,
     """
-<strong>Lưu ý</strong>
+<strong>Chi tiết bonus (RUBRIC.md của lab)</strong>
 <ul>
-  <li>Máy RAM dưới 16 GB dùng model 3B. Model phải có tag “tools” trên Ollama.</li>
-  <li>Model local chạy chậm; nên chạy thử 3 đến 5 case bằng một file eval nhỏ trước.</li>
-  <li>Ollama có thể bỏ qua <code>tool_choice="required"</code>. Model không gọi tool là lỗi cần đo, không phải bug của harness.</li>
-  <li>Kiểm tra ngược: chạy bản <code>v5-local</code> trên model cloud. Có tìm được một bản prompt dùng tốt cho cả hai không?</li>
-  <li>Preflight local: <code>python scripts/preflight_provider.py --provider ollama --model qwen2.5:7b</code>. Args JSON lỗi được giữ trong <code>args._invalid_json_arguments</code>.</li>
+  <li>Bonus không cộng vào điểm chính 100; ghi riêng, tối đa 10 điểm.</li>
+  <li>Small Local Model (4 điểm): ít nhất 2 model local chạy base eval, ít nhất 2 vòng tối ưu có log (<code>v4-local</code>, <code>v5-local</code>), bảng cloud và local ở mục B7. Máy RAM dưới 16 GB dùng model 3B; model phải có tag “tools” trên Ollama.</li>
+  <li>Từ 4 tool mới (3 điểm): mỗi tool đủ <code>TOOL.md</code>, đăng ký, ít nhất 3 test và có eval case route tới. Tool có sẵn (<code>send</code>, <code>policy</code>, <code>papers</code>, <code>paper_text</code>) không tự được bonus.</li>
+  <li>Telegram (2 điểm): transcript cho thấy agent hỏi lại, user xác nhận, <code>send(confirmed=true)</code>, <code>status: sent</code> trên private channel của nhóm.</li>
+  <li>Test challenge (1 điểm): toàn suite <code>pytest</code> 0 skipped, hoặc regression test cho bug tìm được trong tool có sẵn (ghi ở B5).</li>
 </ul>
 """,
 )
 
-# 17 ── Rubric ───────────────────────────────────────────────────────────
+# 16 ── Rubric ───────────────────────────────────────────────────────────
+RUBRIC_ROWS = [
+    ("C1", "Baseline v0 và phân tích lỗi", "CP1", 10),
+    ("C2", "Prompt và tool declaration", "CP2", 15),
+    ("C3", "Vòng lặp v1 đến v3 có bằng chứng", "CP2", 20),
+    ("C4", "Tool mới và unit test", "CP3", 15),
+    ("C5", "10 case eval nhóm", "CP4", 10),
+    ("C6", "UI và live chat", "CP5", 10),
+    ("C7", "Báo cáo nhóm", "CP5", 10),
+    ("C8", "Đóng góp cá nhân", "Cả buổi", 10),
+]
+_rubric = "\n".join(
+    f'      <tr><td><b>{c}</b> {name}</td><td>{cp}</td><td class="bar-cell" title="{pts} điểm"><span class="bar" style="--v: {pts / 20:.3f}"></span><span class="bar-val">{pts}</span></td></tr>'
+    for c, name, cp, pts in RUBRIC_ROWS
+)
 slide(
-    "Tiêu chí chấm: bắt buộc, bonus và lỗi nặng",
-    """
-<h2 class="title">Tiêu chí chấm: bắt buộc, bonus và lỗi nặng</h2>
-<div class="grid grid-2">
-  <section class="panel">
-    <h3>Bắt buộc và bằng chứng</h3>
-    <table class="data data--compact">
-      <tbody>
-        <tr><td>Provider thật, ít nhất 5 tool</td><td><code>tools.yaml</code>, <code>runs/</code></td></tr>
-        <tr><td><code>v0</code> và 3 vòng tối ưu</td><td><code>version_log.csv</code></td></tr>
-        <tr><td>1 tool mới, 3 unit test</td><td><code>tools/</code>, <code>tests/</code></td></tr>
-        <tr><td>Eval case của nhóm</td><td><code>eval_group.json</code></td></tr>
-        <tr><td>UI và link dùng thử</td><td>REPORT Phần A</td></tr>
-        <tr><td>Chat live ít nhất 3 lượt</td><td><code>transcripts/</code></td></tr>
-        <tr><td>Report Phần A và Phần B</td><td><code>REPORT.md</code></td></tr>
-      </tbody>
-    </table>
-  </section>
+    "Rubric: 100 điểm chính, C1 đến C8",
+    f"""
+<h2 class="title">Rubric: 100 điểm chính, C1 đến C8</h2>
+<div class="grid grid-rubric">
+  <table class="data data--compact">
+    <thead><tr><th>Tiêu chí</th><th>Checkpoint</th><th>Điểm</th></tr></thead>
+    <tbody>
+{_rubric}
+    </tbody>
+  </table>
   <div class="stack">
-    <section class="panel">
-      <h3>Bonus</h3>
-      <ul>
-        <li><code>send</code> có xác nhận.</li>
-        <li><code>policy</code>, <code>papers</code>, <code>paper_text</code>.</li>
-        <li>Small Local Model Challenge.</li>
-        <li>UI cộng hơn 3 tool mới.</li>
-      </ul>
-    </section>
     <section class="anti">
-      <h3>{ICONS_ANTI}Lỗi nặng</h3>
+      <h3>{{ICONS_ANTI}}Không được tính</h3>
       <ul>
-        <li>Lộ API key hoặc commit <code>.env</code>.</li>
-        <li>Sửa nội dung case trong <code>eval_base.json</code>.</li>
-        <li>Số liệu không có file run.</li>
-        <li>Đổi tên tool không đồng bộ.</li>
+        <li>Run có lỗi provider.</li>
+        <li>Version chỉ đổi nhãn.</li>
+        <li>Nhận xét không trỏ tới file.</li>
+        <li>Chép case eval có sẵn.</li>
       </ul>
     </section>
+    <p class="note">Bằng chứng phải nằm trong repo nộp bài.</p>
   </div>
 </div>
-<p class="note">Chưa có <code>RUBRIC.md</code>: key coach công bố điểm. Bonus tối đa 10 điểm.</p>
 """,
     """
-<strong>Về chấm điểm</strong>
+<strong>Quy tắc chấm (RUBRIC.md của lab)</strong>
 <ul>
-  <li>Audit repo lab cho thấy thiếu <code>RUBRIC.md</code>, <code>SUBMISSION.md</code>, <code>CHECKPOINTS.md</code>, <code>RULES.md</code>. Nếu ban chuyên môn đã có rubric, điền điểm vào slide này trước giờ học.</li>
-  <li>Mục “lỗi nặng” suy ra từ các quy định trong README lab; mức trừ điểm cụ thể do key coach quyết định.</li>
-  <li>Theo quy ước chung của khóa, bonus tối đa 10 điểm và là điểm lab, không phải điểm phát biểu.</li>
+  <li>Run hợp lệ: <code>summary.provider_error_cases == 0</code> và <code>summary.measured_cases == summary.total_cases</code>. Run v0 không hợp lệ thì C1 bằng 0.</li>
+  <li>C3 nặng nhất (20 điểm): mỗi version một giả thuyết, có hash, metric trước và sau; version không tăng điểm vẫn được tính nếu phân tích trung thực.</li>
+  <li>C8: mỗi thành viên có báo cáo đúng tên file và có commit kỹ thuật; thiếu thành viên nào thì trừ phần của thành viên đó.</li>
+  <li>Nhận xét không trỏ được tới file, run hoặc commit thì không tính điểm.</li>
 </ul>
 """,
     done=5,
 )
 
-# 18 ── Submit checklist ─────────────────────────────────────────────────
+# 17 ── Submit checklist ─────────────────────────────────────────────────
 slide(
     "Checklist nộp bài và khởi động lab",
     """
 <h2 class="title">Checklist nộp bài và khởi động lab</h2>
 <div class="grid grid-2">
   <div>
-    <h3 class="sub">Trước khi rời phòng lab</h3>
+    <h3 class="sub">Trước khi nộp</h3>
     <ul class="checklist">
-      <li>Tên repo đúng cú pháp <code>K5-&lt;L3A/L3B&gt;-DAY03-HoVaTen-MSSV-…</code></li>
-      <li><code>artifacts/system_prompt.md</code>, <code>tools.yaml</code> là bản <code>v3</code></li>
-      <li><code>version_log.csv</code> đủ <code>v0</code> đến <code>v3</code></li>
-      <li><code>REPORT.md</code> Phần A và Phần B; poster nếu có</li>
-      <li><code>eval_group.json</code>, <code>tests/</code>, <code>runs/</code>, <code>transcripts/</code></li>
+      <li>Tên repo <code>K5-L3A-…</code> hoặc <code>K5-L3B-…</code></li>
+      <li><code>TEAM.md</code> đủ thông tin, có commit chốt</li>
+      <li>Mỗi người có <code>report/team/MSSV_HoTen.md</code></li>
+      <li><code>group_report.md</code> đủ Phần A và B</li>
+      <li><code>pytest</code> báo 0 failed</li>
+      <li>Run v0 đến v3, run group, transcript, UI</li>
       <li>Không có <code>.env</code> hay key</li>
-      <li>Mỗi thành viên tự nộp link repo nhóm lên LMS</li>
+      <li>Mọi thành viên nộp link trên LMS</li>
     </ul>
   </div>
   <div class="stack">
     <section class="panel">
-      <h3>Hạn nộp (GMT+7)</h3>
-      <ul>
-        <li class="deadline-morning">Lab sáng: trước 23h59 ngày học.</li>
-        <li class="deadline-afternoon">Lab chiều hoặc tối: trước 11h59 ngày hôm sau.</li>
-      </ul>
-      <p>Chấm theo commit cuối trước deadline.</p>
+      <h3>Deadline (GMT+7)</h3>
+      <p class="deadline">23h59 ngày lab</p>
+      <p>Coach có thể gia hạn tối đa 48h.</p>
     </section>
     <div class="cta-row">
-      <button class="btn-primary" type="button" onclick="window.kickoffLab && window.kickoffLab()">Bắt đầu CP0: Setup</button>
-      
+      <button class="btn-primary" type="button" onclick="window.kickoffLab && window.kickoffLab()">Bắt đầu CP1: Setup</button>
     </div>
   </div>
 </div>
@@ -889,9 +817,10 @@ slide(
     """
 <strong>Lời dặn kết thúc</strong>
 <ul>
-  <li>Bấm nút để quay về CP0 và bắt đầu.</li>
-  <li>Hạn nộp, quy định chấm theo commit cuối và việc mỗi thành viên tự nộp LMS lấy theo quy ước chung của khóa (RULES và SUBMISSION Day 02); README lab Day 03 chưa ghi. Xác nhận lại với lớp.</li>
-  <li>Chúc các nhóm làm việc tập trung và đọc log thật kỹ.</li>
+  <li>Bấm nút để quay về CP1 và bắt đầu.</li>
+  <li>Deadline theo SUBMISSION.md của lab: 23h59 ngày lab (GMT+7), áp dụng cho cả lớp sáng và lớp chiều. Coach có thể gia hạn tối đa 48h; nếu gia hạn thì theo thông báo của coach.</li>
+  <li>Các mốc 15:00, 15:30, 16:00, 16:30, 17:30 chỉ là checkpoint tại lớp, không phải deadline.</li>
+  <li>Không commit <code>.env</code>, API key, token Telegram, <code>.venv</code>, cache hay <code>arxiv_papers/</code>.</li>
 </ul>
 """,
     done=5,
