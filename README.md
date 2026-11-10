@@ -4,6 +4,10 @@ Deck giảng viên **Prompt Engineering và Tool Calling: Research Agent Tool Ev
 
 Nội dung lấy từ repo lab `VinUni-AI20k/Day03-Prompt-Engineering-Tool-Calling-Labs-student`. Logo Vingroup và VinUniversity cắt từ trang https://vinuni.edu.vn/aithucchien/.
 
+## Live
+
+https://sagitakdx.github.io/k5-day03-instructor-slides/ (thêm `?ca=sang` hoặc `?ca=chieu` để chọn ca)
+
 ## Sửa nội dung
 
 Nội dung slide nằm trong `content/build_content.py` (HTML của từng slide và speaker notes). Sửa file này rồi sinh lại JSON:
@@ -26,6 +30,7 @@ npm run dev
 cd app
 npm run build
 # output: app/dist, base path /k5-day03-instructor-slides/
+# deploy: copy app/dist/ vào SagitaKDX.github.io/k5-day03-instructor-slides/ rồi push
 ```
 
 ## Lớp sáng và lớp chiều
