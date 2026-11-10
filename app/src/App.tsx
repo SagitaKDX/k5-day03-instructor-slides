@@ -1,5 +1,6 @@
 import {
   useCallback,
+  useLayoutEffect,
   useEffect,
   useMemo,
   useRef,
@@ -8,6 +9,7 @@ import {
 import rawSlides from './slides/content.json'
 import { Maximize, Minimize, Music, NotebookText, Volume2, VolumeX } from 'lucide-react'
 import logoUrl from './assets/logo-vingroup-vinuni.png'
+import { fitAll } from './fit'
 import {
   SESSION_LABEL,
   clearSessionInUrl,
@@ -118,6 +120,25 @@ export default function App() {
   const warnedRef = useRef(false)
   const zeroedRef = useRef(false)
   const prevIndex = useRef(0)
+
+  // Scale every slide toward a projector-readable text size; refit on resize and once fonts load.
+  useLayoutEffect(() => {
+    let timer = 0
+    const fitNow = () => {
+      ;(window as unknown as { __deckFit?: unknown }).__deckFit = fitAll()
+    }
+    const later = () => {
+      window.clearTimeout(timer)
+      timer = window.setTimeout(fitNow, 60)
+    }
+    fitNow()
+    void document.fonts?.ready.then(fitNow)
+    window.addEventListener('resize', later)
+    return () => {
+      window.clearTimeout(timer)
+      window.removeEventListener('resize', later)
+    }
+  }, [slides])
 
   const current = slides[index]
   const total = slides.length

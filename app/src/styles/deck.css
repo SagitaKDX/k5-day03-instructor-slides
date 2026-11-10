@@ -36,7 +36,7 @@
   --fs-title: clamp(1.6rem, 2.5vw, 2.3rem);
   --fs-lede: clamp(1.05rem, 1.35vw, 1.3rem);
   --fs-body: 1.0625rem;
-  --fs-small: 0.9375rem;
+  --fs-small: 1rem;
   --fs-code: 0.9rem;
 
   --r-sm: 4px;
@@ -463,6 +463,8 @@ button:disabled {
   position: absolute;
   inset: 0;
   overflow-y: auto;
+  display: flex;
+  justify-content: center;
 }
 
 .js .slide {
@@ -486,9 +488,8 @@ button:disabled {
 }
 
 .slide-inner {
-  max-width: var(--container);
-  min-height: 100%;
-  margin: 0 auto;
+  flex: none;
+  margin: auto 0;
   padding: var(--space-4) var(--space-5) var(--space-3);
   display: flex;
   flex-direction: column;
@@ -693,6 +694,11 @@ button:disabled {
 
 .data td b {
   color: var(--ink);
+}
+
+.data td:first-child code {
+  white-space: nowrap;
+  overflow-wrap: normal;
 }
 
 .data .num {
@@ -952,7 +958,7 @@ button:disabled {
 .cp-ref {
   margin-top: auto;
   padding-top: var(--space-1);
-  font-size: 0.875rem;
+  font-size: var(--fs-small);
   color: var(--ink-muted);
 }
 
@@ -998,12 +1004,54 @@ button:disabled {
 }
 
 .cp-layout .data--compact td {
-  font-size: 0.875rem;
+  font-size: var(--fs-small);
 }
 
 .cp-layout .code {
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   padding: var(--space-2) var(--space-3);
+}
+
+/* Lucide icons in box headings */
+.coach h3,
+.anti h3,
+.selfcheck h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.45em;
+}
+
+.box-icon {
+  flex: none;
+  width: 1.15em;
+  height: 1.15em;
+}
+
+/* Inline bar chart: case count per error type (single series, one hue) */
+.bar-cell {
+  white-space: nowrap;
+  min-width: 8.5rem;
+}
+
+.bar {
+  display: inline-block;
+  vertical-align: middle;
+  width: calc(var(--v) * 6rem);
+  height: 0.75em;
+  border-radius: 0 4px 4px 0;
+  background: var(--navy);
+  transition: background-color 160ms var(--ease-out);
+}
+
+.bar-cell:hover .bar {
+  background: var(--ink);
+}
+
+.bar-val {
+  margin-left: 0.5em;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Footer ─────────────────────────────────────────────────────────── */
@@ -1205,6 +1253,8 @@ button:disabled {
   }
 
   .slide-inner {
+    flex: 1 1 auto;
+    min-width: 0;
     padding: var(--space-4) var(--space-3);
   }
 
@@ -1234,14 +1284,4 @@ button:disabled {
   }
 }
 
-/* Short projector screens (1280 x 800, 1366 x 768): scale the rem base so dense checkpoint slides fit */
-@media (max-height: 840px) and (min-width: 961px) {
-  html {
-    font-size: 14px;
-  }
 
-  :root {
-    --header-h: 68px;
-    --footer-h: 50px;
-  }
-}
